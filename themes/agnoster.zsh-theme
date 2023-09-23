@@ -93,6 +93,9 @@ prompt_context() {
   fi
 }
 
+ZSH_VCS_DIRTY_PROMPT_SEGMENT_BG_COLOR="yellow"
+ZSH_VCS_CLEAN_PROMPT_SEGMENT_BG_COLOR="green"
+
 # Git: branch/detached head, dirty status
 prompt_git() {
   (( $+commands[git] )) || return
@@ -113,9 +116,9 @@ prompt_git() {
     ref="◈ $(git describe --exact-match --tags HEAD 2> /dev/null)" || \
     ref="➦ $(git rev-parse --short HEAD 2> /dev/null)" 
     if [[ -n $dirty ]]; then
-      prompt_segment yellow black
+      prompt_segment $ZSH_VCS_DIRTY_PROMPT_SEGMENT_BG_COLOR black
     else
-      prompt_segment green $CURRENT_FG
+      prompt_segment $ZSH_VCS_CLEAN_PROMPT_SEGMENT_BG_COLOR $CURRENT_FG
     fi
 
     local ahead behind
@@ -168,12 +171,12 @@ prompt_bzr() {
     status_all=$(echo -n "$bzr_status" | head -n1 | wc -m)
     revision=${$(bzr log -r-1 --log-format line | cut -d: -f1):gs/%/%%}
     if [[ $status_mod -gt 0 ]] ; then
-      prompt_segment yellow black "bzr@$revision ✚"
+      prompt_segment $ZSH_VCS_DIRTY_PROMPT_SEGMENT_BG_COLOR black "bzr@$revision ✚"
     else
       if [[ $status_all -gt 0 ]] ; then
-        prompt_segment yellow black "bzr@$revision"
+        prompt_segment $ZSH_VCS_DIRTY_PROMPT_SEGMENT_BG_COLOR black "bzr@$revision"
       else
-        prompt_segment green black "bzr@$revision"
+        prompt_segment $ZSH_VCS_CLEAN_PROMPT_SEGMENT_BG_COLOR black "bzr@$revision"
       fi
     fi
   fi
@@ -190,11 +193,11 @@ prompt_hg() {
         st='±'
       elif [[ -n $(hg prompt "{status|modified}") ]]; then
         # if any modification
-        prompt_segment yellow black
+        prompt_segment $ZSH_VCS_DIRTY_PROMPT_SEGMENT_BG_COLOR black
         st='±'
       else
         # if working copy is clean
-        prompt_segment green $CURRENT_FG
+        prompt_segment $ZSH_VCS_CLEAN_PROMPT_SEGMENT_BG_COLOR $CURRENT_FG
       fi
       echo -n ${$(hg prompt "☿ {rev}@{branch}"):gs/%/%%} $st
     else
@@ -205,10 +208,10 @@ prompt_hg() {
         prompt_segment red black
         st='±'
       elif `hg st | grep -q "^[MA]"`; then
-        prompt_segment yellow black
+        prompt_segment $ZSH_VCS_DIRTY_PROMPT_SEGMENT_BG_COLOR black
         st='±'
       else
-        prompt_segment green $CURRENT_FG
+        prompt_segment $ZSH_VCS_CLEAN_PROMPT_SEGMENT_BG_COLOR $CURRENT_FG
       fi
       echo -n "☿ ${rev:gs/%/%%}@${branch:gs/%/%%}" $st
     fi
