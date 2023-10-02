@@ -1,5 +1,7 @@
 # custom files
-custom/
+custom/*
+!custom/plugins/
+custom/plugins/example
 
 # temp files directories
 cache/
